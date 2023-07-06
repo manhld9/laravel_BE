@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  api:
+    tty: true
+    stdin_open: true
+    build:
+      context: "."
+      dockerfile: ./docker/Dockerfile
+      target: base
+    command: /scripts/entrypoint.sh
+    volumes:
+      - .:/var/www/html
+      - ./docker/scripts:/scripts
+    depends_on:
+      - mysql
+    ports:
+      - "8000:8000"
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      - mysql:/var/lib/mysql
+    command: mysqld --innodb_use_native_aio=0
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-proot"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${DB_USERNAME}
+      PMA_PASSWORD: ${DB_PASSWORD}
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+
+  # swagger-ui:
+  #   image: swaggerapi/swagger-ui
+  #   ports:
+  #       - "8080:8080"
+  #   volumes:
+  #       - ./schemas:/schemas:ro
+  #   environment:
+  #       SWAGGER_JSON: /schemas/v1/schema.yml
+  #       WITH_CREDENTIALS: 1
+
+volumes:
+    mysql:
