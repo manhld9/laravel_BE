@@ -21,10 +21,16 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                // return redirect(RouteServiceProvider::HOME);
+                return redirect($this->redirectTo($request));
             }
         }
 
         return $next($request);
+    }
+
+    protected function redirectTo(Request $request)
+    {
+        return Auth::check() ? route('dashboard') : $request->path();
     }
 }
