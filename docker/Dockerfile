@@ -1,7 +1,7 @@
 # base
 FROM php:8.1.5-fpm-alpine3.15 AS base
 
-RUN apk add --update --no-cache bash git
+RUN apk add --update --no-cache bash git npm
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/download/1.5.33/install-php-extensions /usr/local/bin/
 

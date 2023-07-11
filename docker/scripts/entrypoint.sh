@@ -18,7 +18,7 @@ php artisan migrate
 crond
 
 # Start serve
-php artisan serve --host=0.0.0.0
+php artisan serve --host=0.0.0.0 & npm run dev
 
 # Finally call command issued to the docker service
 exec "$@"
