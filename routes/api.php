@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,15 @@ Route::middleware('auth:sanctum')->group(function() {
         return $request->user();
     });
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/my_roles', [RoleController::class, 'my_roles']);
+
+    Route::middleware('role:user')->group(function () {
+
+    });
+
+    Route::middleware('role:admin')->group(function () {
+
+    });
 });
 
 Route::post('/register', [AuthController::class, 'register']);
