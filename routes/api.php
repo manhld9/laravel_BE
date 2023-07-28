@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,13 +23,19 @@ Route::middleware('auth:sanctum')->group(function() {
     });
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/my_roles', [RoleController::class, 'my_roles']);
+    Route::get('/exams', [ExamController::class, 'index']);
+    Route::get('/exams/{id}', [ExamController::class, 'show']);
 
     Route::middleware('role:user')->group(function () {
 
     });
 
     Route::middleware('role:admin')->group(function () {
-
+        Route::controller(ExamController::class)->group(function() {
+            Route::post('/exams/{id}', [ExamController::class, 'store']);
+            Route::delete('/exams/{id}', [ExamController::class, 'delete']);
+            Route::patch('/exams/{id}', [ExamController::class, 'update']);
+        });
     });
 });
 
