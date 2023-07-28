@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,7 +20,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function() {
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        $user = $request->user()->toArray();
+        $roles = $request->user()->roles()->pluck('name');
+        $user['roles'] = $roles;
+        return $user;
     });
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/my_roles', [RoleController::class, 'my_roles']);
@@ -30,7 +34,11 @@ Route::middleware('auth:sanctum')->group(function() {
 
     });
 
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware('role:admin')->prefix('admin')->group(function () {
+        Route::controller(UserController::class)->group(function() {
+            Route::get('/users', [UserController::class, 'index']);
+        });
+
         Route::controller(ExamController::class)->group(function() {
             Route::post('/exams/{id}', [ExamController::class, 'store']);
             Route::delete('/exams/{id}', [ExamController::class, 'delete']);
