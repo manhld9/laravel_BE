@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\LimitTime;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,7 +18,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->string('title');
             $table->string('subtitle')->nullable();
-            $table->float('rating', 2, 1);
+            $table->string('description');
+            $table->float('level', 2, 1);
+            $table->integer('limit_time')->unsigned()->default(LimitTime::HalfHour);
             $table->timestamps();
         });
     }

@@ -9,7 +9,17 @@ class Question extends Model
 {
     use HasFactory;
 
-    protected $casts = [
-        'answers' => 'array'
+    protected $fillable = [
+        'exam_id',
+        'content',
+        'type'
     ];
+
+    public function exam() {
+        return $this->belongsTo(Exam::class);
+    }
+
+    public function answers() {
+        return $this->hasMany(Answer::class);
+    }
 }

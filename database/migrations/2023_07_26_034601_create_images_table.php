@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('images', function (Blueprint $table) {
             $table->id();
             $table->string('content');
-            $table->string('source_id');
+            $table->string('source_id')->onDelete('cascade');
             $table->string('source_type');
             $table->timestamps();
         });
