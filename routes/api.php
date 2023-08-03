@@ -40,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function() {
         });
 
         Route::controller(ExamController::class)->group(function() {
-            Route::post('/exams/{id}', [ExamController::class, 'store']);
+            Route::post('/exams', [ExamController::class, 'store']);
             Route::delete('/exams/{id}', [ExamController::class, 'delete']);
             Route::patch('/exams/{id}', [ExamController::class, 'update']);
         });
