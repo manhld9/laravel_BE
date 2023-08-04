@@ -19,9 +19,16 @@ class ExamController extends BaseController
         return $this->sendResponse($exams, 'Get exams success.');
     }
 
-    public function show(Exam $exam): JsonResponse
+    public function show(Request $request): JsonResponse
     {
-        return $this->sendResponse($exam, 'Get exam success.');
+        try {
+            $exam = Exam::findOrFail($request->id);
+            $data = $exam->toArray();
+            $data['creator'] = $exam->user()->first();
+            return $this->sendResponse($data, 'Get exam success.');
+        } catch (\Throwable $th) {
+            return $this->sendError($th->getMessage(), [], 500);
+        }
     }
 
     public function store(Request $request): JsonResponse
