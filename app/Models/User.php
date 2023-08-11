@@ -57,6 +57,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Permission::class, 'users_permissions');
     }
 
+    public function exercises() {
+        return $this->hasMany(Exercise::class);
+    }
+
     /**
      * The "booted" method of the model.
      */

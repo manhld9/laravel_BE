@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ExamController;
+use App\Http\Controllers\Api\ExerciseController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -31,7 +32,10 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::get('/exams/{id}', [ExamController::class, 'show']);
 
     Route::middleware('role:user')->group(function () {
-
+        Route::controller(ExerciseController::class)->group(function() {
+            Route::post('/exams/{exam_id}/exercises', [ExerciseController::class, 'store']);
+            Route::patch('/exams/{exam_id}/exercises/{id}', [ExerciseController::class, 'submit']);
+        });
     });
 
     Route::middleware('role:admin')->prefix('admin')->group(function () {
