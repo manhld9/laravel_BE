@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::controller(ExerciseController::class)->group(function() {
             Route::post('/exams/{exam_id}/exercises', [ExerciseController::class, 'store']);
             Route::patch('/exams/{exam_id}/exercises/{id}', [ExerciseController::class, 'submit']);
+            Route::get('/exams/{exam_id}/exercises/{id}', [ExerciseController::class, 'show']);
         });
     });
 

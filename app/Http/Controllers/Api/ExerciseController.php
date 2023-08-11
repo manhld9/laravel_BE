@@ -22,7 +22,6 @@ class ExerciseController extends BaseController
     public function store(Request $request): JsonResponse
     {
         try {
-            // load if exercise exists
             $exam = Exam::with(['questions', 'questions.answers', 'user'])->findOrFail($request->exam_id);
             $exercises = $exam->exercises()->with(['exercise_questions.question.answers'])
                 ->where(['user_id' => $request->user()->id])->get();
@@ -71,6 +70,28 @@ class ExerciseController extends BaseController
             return $this->sendResponse($data, 'Submit Completed!');
         } catch (\Throwable $th) {
             DB::rollBack();
+            return $this->sendError($th->getMessage(), [], 500);
+        }
+    }
+
+    public function show(Request $request): JsonResponse
+    {
+        try {
+            $exercise = Exercise::with(['exercise_questions.exercise_answers', 'exercise_questions.question.answers'])
+                ->where([
+                    'user_id' => $request->user()->id,
+                    'id' => $request->id,
+                    'exam_id' => $request->exam_id
+                ])->firstOrFail();
+
+            $questions = $this->service->initialExistExercise($exercise);
+
+            $data = $exercise->toArray();
+            $data['questions'] = $questions;
+            $data['exam'] = $exercise->exam()->with(['user'])->first();
+
+            return $this->sendResponse($data, 'Enrolled Exam!');
+        } catch (\Throwable $th) {
             return $this->sendError($th->getMessage(), [], 500);
         }
     }
