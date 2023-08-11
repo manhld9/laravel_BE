@@ -57,16 +57,21 @@ class ExerciseQuestionService
 
     private function getExerciseQuestion(ExerciseQuestion $exercise_question, Question $question)
     {
-        $data = $exercise_question->setVisible(['id', 'exercise_id', 'position'])->toArray();
+        $data = $exercise_question->setVisible(['id', 'exercise_id', 'position', 'value'])->toArray();
         $data = array_merge($data, $question->setVisible(['content', 'type'])->toArray());
-        $data['answers'] = $this->loadAnswers($question);
+        $data['answers'] = $this->loadAnswers($question, $exercise_question['exercise_answers']->toArray());
 
         return $data;
     }
 
-    private function loadAnswers(Question $question)
+    private function loadAnswers(Question $question, $exercise_answers = null)
     {
-        return $question->answers()->select('id', 'content')->get()->toArray();
+        $ex_answer_ids = $exercise_answers && count($exercise_answers) > 0 ? $this->mapWithId($exercise_answers, 'answer_id') : [];
+        $questions = $question->answers()->select('id', 'content')->get()->toArray();
+        return array_map(function ($i) use ($ex_answer_ids) {
+            $i['selected'] = in_array($i['id'], $ex_answer_ids);
+            return $i;
+        }, $questions);
     }
 
     private function initializeExerciseQuestions($exercise, $ex_questions)
@@ -95,10 +100,10 @@ class ExerciseQuestionService
         }, $ex_questions);
     }
 
-    private function mapWithId($arr)
+    private function mapWithId($arr, $field = 'id')
     {
-        return array_map(function ($a) {
-            return $a['id'];
+        return array_map(function ($a) use($field) {
+            return $a[$field];
         }, $arr);
     }
 }

@@ -9,12 +9,19 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\AliveTrueAnswerRule;
+use Illuminate\Support\Facades\DB;
 
 class ExamController extends BaseController
 {
     public function index(Request $request): JsonResponse
     {
-        $exams = Exam::paginate(15);
+        if ($request->type === 'completed') {
+            $exams = Exam::completed($request->user()->id);
+        } else {
+            $exams = DB::table('exams');
+        }
+
+        $exams = $exams->paginate(15);
 
         return $this->sendResponse($exams, 'Get exams success.');
     }
@@ -25,6 +32,7 @@ class ExamController extends BaseController
             $exam = Exam::findOrFail($request->id);
             $data = $exam->toArray();
             $data['creator'] = $exam->user()->first();
+            $data['exercise'] = $exam->exercises()->first();
             return $this->sendResponse($data, 'Get exam success.');
         } catch (\Throwable $th) {
             return $this->sendError($th->getMessage(), [], 500);
@@ -60,7 +68,7 @@ class ExamController extends BaseController
                 'limit_time' => $request->limit_time
             ]);
 
-            foreach($request->questions as $data) {
+            foreach ($request->questions as $data) {
                 $question = Question::create([
                     'exam_id' => $exam->id,
                     'content' => $data['content'],

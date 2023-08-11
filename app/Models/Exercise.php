@@ -15,6 +15,10 @@ class Exercise extends Model
         'user_id'
     ];
 
+    protected $casts = [
+        'submitted_at' => 'datetime'
+    ];
+
     public function exam() {
         return $this->belongsTo(Exam::class);
     }
